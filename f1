@@ -1,0 +1,84 @@
+import React, { useState, useEffect } from "react";
+import "./App.css";
+
+const App = () => {
+  const [form, setForm] = useState({ name: "", phone: "", method: "QR" });
+  const [registered, setRegistered] = useState(false);
+  const [id, setId] = useState("");
+  const [lapTime, setLapTime] = useState("");
+  const [submittedTime, setSubmittedTime] = useState(null);
+  const [counter, setCounter] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => setCounter((c) => c + 1), 100);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prevForm) => ({ ...prevForm, [name]: value }));
+  };
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+    const newId = Math.random().toString(36).substr(2, 9).toUpperCase();
+    setId(newId);
+    setRegistered(true);
+  };
+
+  const handleLapSubmit = () => {
+    setSubmittedTime(lapTime);
+  };
+
+  return (
+    <div className="app">
+      <div className="background-image"></div>
+      <div className="overlay"></div>
+      <div className="container">
+        <h1 className="glow-text">F1 25 REGISTRATION</h1>
+        <p className="counter">
+          Total Registrations: <span className="animated-counter">{counter}</span>
+        </p>
+        {!registered ? (
+          <form className="form" onSubmit={handleRegister}>
+            <label>Driver Name</label>
+            <input name="name" value={form.name} onChange={handleChange} required />
+
+            <label>Phone Number</label>
+            <input name="phone" value={form.phone} onChange={handleChange} required />
+
+            <label>Payment Method</label>
+            <select name="method" value={form.method} onChange={handleChange}>
+              <option value="QR">QR</option>
+              <option value="Cash">Cash</option>
+            </select>
+
+            <button type="submit">Register</button>
+          </form>
+        ) : (
+          <div className="confirmation">
+            <h2>Registered!</h2>
+            <p>ID: {id}</p>
+            <p>Name: {form.name}</p>
+            <p>Phone: {form.phone}</p>
+            <p>Method: {form.method}</p>
+
+            <div className="lap-section">
+              <h3>Submit Lap Time</h3>
+              <input
+                type="text"
+                placeholder="00:00.000"
+                value={lapTime}
+                onChange={(e) => setLapTime(e.target.value)}
+              />
+              <button onClick={handleLapSubmit}>Submit Lap</button>
+              {submittedTime && <p>Fastest Lap: {submittedTime}</p>}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default App;
